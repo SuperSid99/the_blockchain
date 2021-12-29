@@ -29,7 +29,6 @@ def genarate_key(key):
         if int(_) not in arr:
             dic[str(count)] = _
             arr.append(int(_))
-            print(arr)
             count += 1
         else:
             continue
