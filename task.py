@@ -17,14 +17,14 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
     # Event is created, you can process it now
 
     def on_modified(self, event):
-        # print("Watchdog received modified event - % s." % event.src_path)
-        execute_process(event.src_path)
+        print("Watchdog received modified event - % s." % event.src_path)
+        # execute_process(event.src_path)
 
     # Event is modified, you can process it now
 
 
 if __name__ == "__main__":
-    src_path = r"/home/vishwajeet/Block/the_blockchain/images"
+    src_path = r'/Users/siddharthsharma/Desktop/the_blockchain/images'
     event_handler = Handler()
     observer = watchdog.observers.Observer()
     observer.schedule(event_handler, path=src_path, recursive=True)
