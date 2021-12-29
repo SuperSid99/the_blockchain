@@ -4,10 +4,6 @@
             "Key": "1942216",
             "block0_data": "-blockchain_for_forensics",
             "block0_hash": "blockchain_for_forensics"
-        },
-        {
-            "block1_hash": "2f2779bc39fb818a6ad32d0a01e1778515edb664e4aeeeb57c801ec77c117c60",
-            "block0_hash": "blockchain_for_forensics"
         }
     ]
 }
