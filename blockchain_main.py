@@ -13,9 +13,15 @@ def execute_process(image_path):
     y = json.loads(x)
     z = y["hash_data"]
 
+    key_json = open('block_data.json', 'r+')
+
+    a = key_json.read()
+    b = json.loads(a)
+    key = b["blockchain_data"][0]['Key']
+
     hash_value = list(z[-1].values())[-1]
 
-    en_image = give_encyripted_image(image_path)
+    en_image = give_encyripted_image(image_path,key)
 
     new_block = create_new_block(hash_value, en_image)
     new_hash = new_block.block_hash
