@@ -39,9 +39,9 @@ def genarate_key(key):
 
             if 9 - c1 not in arr:
                 dic[str(count)] = str(9 - c1)
+                arr.append(9 - c1)
                 count += 1
                 c1 += 1
-                arr.append(10 - c1)
                 nono = False
             else:
                 c1 += 1
