@@ -24,7 +24,7 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
 
 
 if __name__ == "__main__":
-    src_path = r'/Users/siddharthsharma/Desktop/the_blockchain/images'
+    src_path = r'The_path_to_the_directory_goes_here'
     event_handler = Handler()
     observer = watchdog.observers.Observer()
     observer.schedule(event_handler, path=src_path, recursive=True)
