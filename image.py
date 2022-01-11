@@ -6,16 +6,18 @@ def give_encyripted_image(name_of_image, key):
     img = cv.imread(name_of_image)
     encyripted_image = ""
     for _ in img.shape:
-        encyripted_image = encyripted_image + str(_) + "-"
+        encyripted_image += str(_) + "-"
 
     for _ in img:
         for i in _:
             for j in i:
                 try:
                     for _ in str(j):
-                        encyripted_image = encyripted_image + Key_dic[_]
+                        encyripted_image += Key_dic[_]
+                    encyripted_image+="-"
                 except:
-                    encyripted_image = encyripted_image + Key_dic[str(j)]
+                    encyripted_image += Key_dic[str(j)]
+                    encyripted_image+="-"
     return encyripted_image
 
 
