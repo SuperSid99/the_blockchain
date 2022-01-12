@@ -6,8 +6,7 @@ def give_encyripted_image(name_of_image, key):
     img = cv.imread(name_of_image)
     encyripted_image = ""
     for _ in img.shape:
-        str_=str(_)
-        encyripted_image +=  f"{str_}-"
+        encyripted_image +=  f"{str(_)}-"
 
     for _ in img:
         for i in _:
