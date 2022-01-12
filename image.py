@@ -16,8 +16,7 @@ def give_encyripted_image(name_of_image, key):
                         encyripted_image += Key_dic[_]
                     encyripted_image+="-"
                 except:
-                    encyripted_image += Key_dic[str(j)]
-                    encyripted_image+="-"
+                    encyripted_image += f"{Key_dic[str(j)]}-"
     return encyripted_image
 
 
