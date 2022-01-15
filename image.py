@@ -104,7 +104,7 @@ def genarate_key(key):
     return(dic)
 
 if __name__=="__main__":
-    sasti = decyript_image("7a5a7a83ee28c7a7a95295664486637e0c476b0d84e8a0281ecab997795a9445")
+    im_numpy = decyript_image("")
 
-    vj=cv.imshow("sasti", sasti)
+    img=cv.imshow("im_numpy", im_numpy)
     cv.waitKey(0)
