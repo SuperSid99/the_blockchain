@@ -5,6 +5,7 @@ from image import get_key
 from write_to_json import write_json
 
 import json
+import time
 
 
 
@@ -21,7 +22,14 @@ def execute_process(image_path):
 
     hash_value = list(z[-1].values())[-1]
 
+    sttime=time.time()
+    print(f"encryption started at {sttime}\n")
+
     en_image = give_encyripted_image(image_path,key)
+
+    endtime=time.time()
+    print(f"encryption ended at {endtime}\n")
+    print(f"total time taken to encrypt = {endtime-sttime}\n")
 
     new_block = create_new_block(hash_value, en_image)
     new_hash = new_block.block_hash

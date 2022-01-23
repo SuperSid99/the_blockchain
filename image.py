@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy
 import json
+import time
 from write_to_json import get_image_data
 
 
@@ -104,7 +105,18 @@ def genarate_key(key):
     return(dic)
 
 if __name__=="__main__":
-    im_numpy = decyript_image("")
+
+
+    sttime=time.time()
+    print(f"dencryption started at {sttime}\n")
+    #Hashcode of the block goes here
+    im_numpy = decyript_image("Hashcode goes here")
 
     img=cv.imshow("im_numpy", im_numpy)
+
+    endtime=time.time()
+    print(f"dencryption ended at {endtime}\n")
+    print(f"total time taken to encrypt = {endtime-sttime}\n")
+
+    
     cv.waitKey(0)

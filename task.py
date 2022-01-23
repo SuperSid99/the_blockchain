@@ -12,7 +12,12 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
 
     def on_created(self, event):
         # print("Watchdog received created event - % s." % event.src_path)
+        sttime=time.time()
+        print(f"image added to folder at {sttime}\n")
         execute_process(event.src_path)
+        endtime=time.time()
+        print(f"excitution ended at {endtime}\n")
+        print(f"total time taken = {endtime-sttime}\n")
 
     # Event is created, you can process it now
 
@@ -24,7 +29,8 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
 
 
 if __name__ == "__main__":
-    src_path = r'Path to your image directry'
+    # add the source path to your folder
+    src_path = r'/Users/siddharthsharma/Desktop/the_blockchain'
     event_handler = Handler()
     observer = watchdog.observers.Observer()
     observer.schedule(event_handler, path=src_path, recursive=True)
