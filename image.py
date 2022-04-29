@@ -59,6 +59,8 @@ def decyript_image(hashcode):
             a+=new_dic[_]
         im_arr_decyripted.append(a)
 
+    print(im_arr_decyripted)
+
     row=int(im_arr_decyripted[0])
     coll=int(im_arr_decyripted[1])
     rgb=int(im_arr_decyripted[2])
@@ -71,6 +73,7 @@ def decyript_image(hashcode):
             im_arr_decyripted_ndimentional[i].append([])
             for _ in range(rgb):
                 im_arr_decyripted_ndimentional[i][j].append(int(im_arr_decyripted[c4]))
+                print(im_arr_decyripted[c4])
                 c4+=1
     return(numpy.array(im_arr_decyripted_ndimentional, dtype=numpy.uint8))
 
