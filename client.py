@@ -1,9 +1,9 @@
+from http import client
 import socket
 import sys
 import errno
-
 IP = "100.81.249.49"
-PORT = 4455
+PORT = 5589
 ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 10240000000
@@ -40,25 +40,28 @@ def main():
         print(f"Sending Image {image}")
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         """ Connecting to the server. """
-        client.connect(ADDR)
-        key = get_key()
+        try:
+            client.connect(ADDR)
+            key = get_key()
 
-        # client.send(image.encode(FORMAT))
+            # client.send(image.encode(FORMAT))
 
-        en_image = give_encyripted_image(f"path to folder/{image}", key)
-        i = 0
-        print("Sending data in Chunks")
-        for chunk in chunks(en_image, 100):
-            print(f"Sending chunk {i}")
-            client.send(chunk.encode(FORMAT))
-            i += 1
+            en_image = give_encyripted_image(f"path to folder/{image}", key)
+            i = 0
+            print("Sending data in Chunks")
+            for chunk in chunks(en_image, 100):
+                print(f"Sending chunk {i}")
+                client.send(chunk.encode(FORMAT))
+                i += 1
 
-        print("All Data sent")
+            print("All Data sent")
 
-        client.close()
+            client.close()
 
-        time.sleep(2)
-
+            time.sleep(2)
+        except Exception as e:
+            print("There was a problem while running the Script ")
+            print(e)
 
 if __name__ == "__main__":
     main()
