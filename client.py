@@ -1,8 +1,9 @@
+from http import client
 import socket
 import sys
 import errno
-IP = "192.168.106.189"
-PORT = 4455
+IP = "100.81.249.49"
+PORT = 5589
 ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 10240000000
@@ -38,24 +39,30 @@ def main():
         print(f"Sending Image {image}")
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         """ Connecting to the server. """
-        client.connect(ADDR)
-        key = get_key()
-        
-        client.send(image.encode(FORMAT))
-        
-        en_image = give_encyripted_image(f"/Users/siddharthsharma/Desktop/the_blockchain/images/{image}",key)
-        i = 0
-        print("Sending data in Chunks")
-        for chunk in chunks(en_image, 100):
-            print(f"Sending chunk {i}")
-            client.send(chunk.encode(FORMAT))
-            i+=1
 
-        print("All Data sent")
-        
-        client.close()
+        try:
+            client.connect(ADDR)
+            key = get_key()
+            
+            # client.send(image.encode(FORMAT))  (this line is creating discrepency in the data so commenting for now)
+            
+            en_image = give_encyripted_image(f"/Users/siddharthsharma/Desktop/the_blockchain/images/{image}",key)
+            i = 0
+            print("Sending data in Chunks")
+            for chunk in chunks(en_image, 100):
+                print(f"Sending chunk {i}")
+                client.send(chunk.encode(FORMAT))
+                i+=1
 
-        time.sleep(2)
+            print("All Data sent")
+            
+            client.close()
+
+            time.sleep(2)
+        except:
+            print("eeeeee")
+         
+        break
 
 if __name__ == "__main__":
     main()
