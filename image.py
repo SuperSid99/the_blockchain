@@ -59,7 +59,7 @@ def decyript_image(hashcode):
             a+=new_dic[_]
         im_arr_decyripted.append(a)
 
-    print(im_arr_decyripted)
+    # print(im_arr_decyripted)
 
     row=int(im_arr_decyripted[0])
     coll=int(im_arr_decyripted[1])
@@ -73,7 +73,6 @@ def decyript_image(hashcode):
             im_arr_decyripted_ndimentional[i].append([])
             for _ in range(rgb):
                 im_arr_decyripted_ndimentional[i][j].append(int(im_arr_decyripted[c4]))
-                print(im_arr_decyripted[c4])
                 c4+=1
     return(numpy.array(im_arr_decyripted_ndimentional, dtype=numpy.uint8))
 
@@ -113,7 +112,7 @@ if __name__=="__main__":
     sttime=time.time()
     print(f"dencryption started at {sttime}\n")
     #Hashcode of the block goes here
-    im_numpy = decyript_image("Hashcode goes here")
+    im_numpy = decyript_image("")
 
     img=cv.imshow("im_numpy", im_numpy)
 
