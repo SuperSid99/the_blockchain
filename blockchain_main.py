@@ -22,7 +22,9 @@ def execute_process(en_image):
 
     hash_value = list(z[-1].values())[-1]
 
-    #commenting the code as we are now operating this in main server
+    '''commenting the code as we are now operating this in main server'''
+    '''To be uncommented for main server and commented for remaining ones'''
+
     # sttime=time.time()
     # print(f"encryption started at {sttime}\n")
     #

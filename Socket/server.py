@@ -41,6 +41,7 @@ def main():
                 break
         print("All Data Recieved")
         data = ''.join(total_data)
+        '''Here for the main server  addition of data as well as image data will be done, and for all other only addition data will be done '''
         execute_process(data)
         conn.close()
         print(f"Disconnected {addr} disconnected")
