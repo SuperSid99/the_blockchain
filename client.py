@@ -39,6 +39,12 @@ def main():
     for image in f:
         print(f"Sending Image {image}")
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        '''socket.SOCK_STREAM. ===> TCP ProtocolIs -> reliable(no data lost) -> Has in-order data delivery: Data is 
+        read by your application in the order it was written by the sender. 
+        AF_INET ===> IPv4
+        socket.socket() creates a socket object that supports the context manager type, so you can use it in a with 
+        statement.
+        Further Notes ==> https://realpython.com/python-sockets/ '''
         """ Connecting to the server. """
         try:
             client.connect(ADDR)
