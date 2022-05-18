@@ -8,12 +8,13 @@ ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 10240000000
 import time
-from image import give_encyripted_image , get_key
+from image import give_encyripted_image, get_key
+
 
 def chunks(lst, n):
     "Yield successive n-sized chunks from lst"
     for i in range(0, len(lst), n):
-        yield lst[i:i+n]
+        yield lst[i:i + n]
 
 
 def main():
@@ -21,14 +22,14 @@ def main():
     f = []
     import os
     from os import listdir
- 
-# get the path or directory
-    folder_dir = "/Users/siddharthsharma/Desktop/the_blockchain/images"
+
+    # get the path or directory
+    folder_dir = ""
     for images in os.listdir(folder_dir):
- 
-    # check if the image end swith png or jpg or jpeg
-        if (images.endswith(".png") or images.endswith(".jpg")\
-            or images.endswith(".jpeg")):
+
+        # check if the image end swith png or jpg or jpeg
+        if (images.endswith(".png") or images.endswith(".jpg")
+                or images.endswith(".jpeg")):
             # display
             f.append(images)
             print(images)
@@ -38,31 +39,35 @@ def main():
     for image in f:
         print(f"Sending Image {image}")
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        '''socket.SOCK_STREAM. ===> TCP ProtocolIs -> reliable(no data lost) -> Has in-order data delivery: Data is 
+        read by your application in the order it was written by the sender. 
+        AF_INET ===> IPv4
+        socket.socket() creates a socket object that supports the context manager type, so you can use it in a with 
+        statement.
+        Further Notes ==> https://realpython.com/python-sockets/ '''
         """ Connecting to the server. """
-
         try:
             client.connect(ADDR)
             key = get_key()
-            
-            # client.send(image.encode(FORMAT))  (this line is creating discrepency in the data so commenting for now)
-            
-            en_image = give_encyripted_image(f"/Users/siddharthsharma/Desktop/the_blockchain/images/{image}",key)
+
+            # client.send(image.encode(FORMAT))
+
+            en_image = give_encyripted_image(f"path to folder/{image}", key)
             i = 0
             print("Sending data in Chunks")
             for chunk in chunks(en_image, 100):
                 print(f"Sending chunk {i}")
                 client.send(chunk.encode(FORMAT))
-                i+=1
+                i += 1
 
             print("All Data sent")
-            
+
             client.close()
 
             time.sleep(2)
-        except:
-            print("eeeeee")
-         
-        break
+        except Exception as e:
+            print("There was a problem while running the Script ")
+            print(e)
 
 if __name__ == "__main__":
     main()
