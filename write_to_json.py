@@ -19,6 +19,10 @@ def get_image_data(hashcode):
     
     count=0
 
+# this function is to send the blockchain to the server
+def get_blockchain():
+    pass
+
 # print(z.values())
 
     for _ in z:
