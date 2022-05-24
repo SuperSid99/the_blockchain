@@ -47,5 +47,16 @@ def main():
         print(f"Disconnected {addr} disconnected")
 
 
+def connect(addr):
+    conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    """ Connecting to the server. """
+    conn.connect(addr)
+    return conn
+
+
+def send_blk_data_to_machines():
+    pass
+
+
 if __name__ == "__main__":
     main()

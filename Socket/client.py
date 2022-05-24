@@ -1,65 +1,76 @@
+from ..blockchain_main import execute_process
+import threading
 import socket
-import sys
-import errno
+import json
 
-#ip address of the main server
-IP = "100.81.249.49"
-PORT = 4455
+IP = "client IP"
+PORT = "CLIENT Port"
 ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 10240000000
-import time
-from image import give_encyripted_image, get_key
 
 
-def chunks(lst, n):
-    "Yield successive n-sized chunks from lst"
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+global conn
+global addr
+global server
 
 
-def main():
-    """ Staring a TCP socket. """
-    f = []
-    import os
-    from os import listdir
+# This function will open up a port of listener(with given IP) for the client to recieve the data files
+def initiate_socket_listener():
+    while True:
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        'Bind the IP and PORT to the server'
+        server.bind(ADDR)
+        'Server is Listening, i.e, server is now waiting for the client to get connected.'
+        server.listen()
+        '''Accepting Connection from Client. '''
+        conn, addr = server.accept()
+        server.setblocking(1)
+        print(f"[New Connection] {addr} connected.")
+        print("New Connection Started seeding file")
+        func = conn.recv(512).decode(FORMAT)
 
-    # get the path or directory
-    folder_dir = ""
-    for images in os.listdir(folder_dir):
+        if func == 'save_blk_data':
+            save_blk_data()
+        elif func == 'verify_chain':
+            verify_chain()
+        else:
+            conn.close()
 
-        # check if the image end swith png or jpg or jpeg
-        if (images.endswith(".png") or images.endswith(".jpg")
-                or images.endswith(".jpeg")):
-            # display
-            f.append(images)
-            print(images)
-    print("Available Files Are::")
-    print(f)
 
-    for image in f:
-        print(f"Sending Image {image}")
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        """ Connecting to the server. """
-        client.connect(ADDR)
-        key = get_key()
+def save_blk_data():
+    i = 0
+    total_data = []
+    while True:
+        print(f'Receiving Data Chunk {i}')
+        data = conn.recv(512).decode(FORMAT)
+        i += 1
+        if data:
+            total_data.append(data)
+        else:
+            break
+    print("All Data Recieved")
+    data = ''.join(total_data)
+    execute_process(data)
+    conn.close()
+    print(f"Disconnected {addr} disconnected")
 
-        # client.send(image.encode(FORMAT))
 
-        en_image = give_encyripted_image(f"path to folder/{image}", key)
-        i = 0
-        print("Sending data in Chunks")
-        for chunk in chunks(en_image, 100):
-            print(f"Sending chunk {i}")
-            client.send(chunk.encode(FORMAT))
-            i += 1
+def verify_data_with_machine_blockchain(main_server_hash_dict):
+    with open('/home/vishwajeet/Travclan/BLK/the_blockchain/hashes.json') as hashes_file:
+        machine_blockchain = json.load(hashes_file)
+        return main_server_hash_dict == machine_blockchain
 
-        print("All Data sent")
 
-        client.close()
-
-        time.sleep(2)
+def verify_chain():
+    main_server_hash_dict = conn.recv(SIZE).decode(FORMAT)
+    conn2 = server.connect(addr)
+    conn2.send(verify_data_with_machine_blockchain(main_server_hash_dict))
 
 
 if __name__ == "__main__":
-    main()
+    t1 = threading.Thread(target=initiate_socket_listener)
+    t1.daemon = True
+    t1.start()
+
+    print("T1 thread Started for Receiving Data from Main server")
