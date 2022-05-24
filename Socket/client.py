@@ -49,7 +49,7 @@ def save_blk_data():
             total_data.append(data)
         else:
             break
-    print("All Data Recieved")
+    print("All Data Received")
     data = ''.join(total_data)
     execute_process(data)
     conn.close()
@@ -59,13 +59,12 @@ def save_blk_data():
 def verify_data_with_machine_blockchain(main_server_hash_dict):
     with open('/home/vishwajeet/Travclan/BLK/the_blockchain/hashes.json') as hashes_file:
         machine_blockchain = json.load(hashes_file)
-        return main_server_hash_dict == machine_blockchain
+        return 1 if main_server_hash_dict == machine_blockchain else 0
 
 
 def verify_chain():
     main_server_hash_dict = conn.recv(SIZE).decode(FORMAT)
-    conn2 = server.connect(addr)
-    conn2.send(verify_data_with_machine_blockchain(main_server_hash_dict))
+    conn.send(verify_data_with_machine_blockchain(main_server_hash_dict).encode(FORMAT))
 
 
 if __name__ == "__main__":

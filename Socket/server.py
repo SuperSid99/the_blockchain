@@ -1,7 +1,9 @@
 from fileinput import filename
 import socket
 import sys
+import json
 import errno
+from config import CLIENT_IPS, CLIENT_PORTS
 
 # "IP Address of the main server"
 IP = "100.81.249.49"
@@ -39,10 +41,12 @@ def main():
                 total_data.append(data)
             else:
                 break
-        print("All Data Recieved")
+        print("All Data Received")
         data = ''.join(total_data)
-        '''Here for the main server  addition of data as well as image data will be done, and for all other only addition data will be done '''
+        '''Here for the main server  addition of data as well as image data will be done, and for all other only 
+        addition data will be done '''
         execute_process(data)
+        send_blk_data_to_machines(data)
         conn.close()
         print(f"Disconnected {addr} disconnected")
 
@@ -54,8 +58,48 @@ def connect(addr):
     return conn
 
 
-def send_blk_data_to_machines():
-    pass
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst"""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+def send_blk_data_to_machines(data):
+    for ip, port in CLIENT_IPS, CLIENT_PORTS:
+        connection = connect((ip, port))
+        connection.send("save_blk_data".encode(FORMAT))
+        time.sleep(2)
+        i = 0
+        print("Sending data in Chunks")
+        for chunk in chunks(data, 100):
+            print(f"Sending chunk {i}")
+            connection.send(chunk.encode(FORMAT))
+            i += 1
+
+        print("All Data sent")
+
+        connection.close()
+
+
+def verify_chain():
+    flag = 0
+    for ip, port in CLIENT_IPS, CLIENT_PORTS:
+        connection = connect((ip, port))
+        connection.send("verify_chain".encode(FORMAT))
+        time.sleep(2)
+        with open('/home/vishwajeet/Travclan/BLK/the_blockchain/hashes.json') as hashes_file:
+            main_server_hash_dict = json.load(hashes_file)
+            connection.send(main_server_hash_dict.encode(FORMAT))
+
+        current_flag = int(connection.recv(SIZE).decode(FORMAT))
+
+        flag = flag & current_flag
+        connection.close()
+
+    if flag:
+        print("********Block Chain Verified****************")
+
+    print("Block chain is corrupted please check the Data")
 
 
 if __name__ == "__main__":
