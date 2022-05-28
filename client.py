@@ -116,6 +116,9 @@ def initiate_socket_listener():
             hash_data = get_hash_data()
             conn.send(hash_data.encode(FORMAT))
 
+        else:
+            conn.close()
+
 
 def get_hash_data():
     with open('file/path/of/client/blockchain') as hashes_file:
