@@ -37,10 +37,9 @@ def give_encyripted_image(name_of_image, key):
     return encyripted_image
 
 
+def decyript_image(im_data, key):
 
-def decyript_image(hashcode, key):
-
-    im_data = get_image_data(hashcode)
+    # im_data = get_image_data(hashcode)
 
     im_arr = im_data.split("-")
 
@@ -72,7 +71,9 @@ def decyript_image(hashcode, key):
             for _ in range(rgb):
                 im_arr_decyripted_ndimentional[i][j].append(int(im_arr_decyripted[c4]))
                 c4+=1
-    return(numpy.array(im_arr_decyripted_ndimentional, dtype=numpy.uint8))
+
+    return im_arr_decyripted_ndimentional
+    # return(numpy.array(im_arr_decyripted_ndimentional, dtype=numpy.uint8))
 
 
 
