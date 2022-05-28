@@ -38,13 +38,11 @@ def give_encyripted_image(name_of_image, key):
 
 
 
-def decyript_image(hashcode):
+def decyript_image(hashcode, key):
 
-    im_data=get_image_data(hashcode)
+    im_data = get_image_data(hashcode)
 
-    key=get_key()
-
-    im_arr=im_data.split("-")
+    im_arr = im_data.split("-")
 
     Key_dic = genarate_key(key)
 
