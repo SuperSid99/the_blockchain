@@ -120,27 +120,6 @@ def initiate_socket_listener():
             conn.close()
 
 
-def get_hash_data():
-    with open('file/path/of/client/blockchain') as hashes_file:
-        machine_blockchain = json.load(hashes_file)
-        return machine_blockchain
-
-
-def save_blk_data():
-    i = 0
-    total_data = []
-    while True:
-        print(f'Receiving Data Chunk {i}')
-        data = conn.recv(512).decode(FORMAT)
-        i += 1
-        if data:
-            total_data.append(data)
-        else:
-            break
-    print("All Data Received")
-    data = ''.join(total_data)
-    execute_process(data)
-    # print(f"Disconnected {addr} disconnected")
 
 
 def verify_data_with_machine_blockchain(main_server_hash_dict):
