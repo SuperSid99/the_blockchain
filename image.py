@@ -17,6 +17,8 @@ def give_encyripted_image(name_of_image, key):
     Key_dic = genarate_key(key)
     img = cv.imread(name_of_image)
     encyripted_image = ""
+
+    print(img.shape)
     for _ in img.shape:
         try:
             for x in str(_):

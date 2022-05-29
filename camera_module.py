@@ -53,9 +53,9 @@ def send_image_to_main_server(en_image):
         print(ch)
 
         for chunk in chunks(en_image, 100):
-            print(chunk)
-            print(f"Sending chunk {i}")
-            print(len(chunk))
+            # print(chunk)
+            # print(f"Sending chunk {i}")
+            # print(len(chunk))
             connection.send(chunk.encode(FORMAT))
             i += 1
         # connection.send("  END".encode(FORMAT))
