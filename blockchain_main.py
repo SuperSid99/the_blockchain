@@ -3,8 +3,6 @@ from blocks import Block
 from image import give_encyripted_image
 from image import get_key
 from write_to_json import write_json
-from common import get_key_by_addr
-from constants import CAMERA_MODULES_IPS
 
 import json
 import time
@@ -61,9 +59,9 @@ def execute_process(en_image):
     }
 
 
-def execute_node_process(en_image):
+def execute_node_process(data):
     hash = open('hashes.json', 'r+')
-
+    data = json.loads(data)
     x = hash.read()
     y = json.loads(x)
     z = y["hash_data"]
@@ -93,8 +91,7 @@ def execute_node_process(en_image):
     print(new_hash)
 
 
-def execute_camera_module_process(im_path, ip):
-    key = get_key_by_addr(ip, CAMERA_MODULES_IPS)
+def execute_camera_module_process(im_path, key):
     en_camera_image = give_encyripted_image(im_path, key)
     return en_camera_image
 

@@ -59,6 +59,14 @@ def connect(addr):
 
 
 
+def save_node_blk_data(conn):
+    data = get_data_by_chunks(conn)
+    print("All Data Received")
+    data = ''.join(data)
+    execute_node_process(data)
+    conn.close()
+    # print(f"Disconnected {addr} disconnected")
+
 
 def get_client_key_by_addr(addr):
     for _ in WHITELISTED_CLIENT_IPS:

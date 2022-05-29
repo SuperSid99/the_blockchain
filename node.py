@@ -1,8 +1,8 @@
 import socket
 from common import save_node_blk_data, get_node_hash_data
 
-NODE_IP = ""
-NODE_PORT = ""
+NODE_IP = "100.81.249.49"
+NODE_PORT = 5000
 SIZE = 10240000000
 FORMAT = "utf-8"
 
@@ -21,22 +21,24 @@ def initiate_socket_listener():
         server.listen()
         '''Accepting Connection from Client. '''
 
-        print(f"Server is Listening in The thread on {NODE_IP, NODE_PORT}")
-        conn, addr = server.accept()
-        server.setblocking(True)
-        print(f"[New Connection] {addr} connected.")
-        print("New Connection Started seeding file")
-        func = conn.recv(512).decode(FORMAT)
+        print(f"Server is Listening on {NODE_IP, NODE_PORT}")
+        while True:
+            conn, addr = server.accept()
+            print(f"[New Connection] {addr} connected.")
+            print("New Connection Started seeding file")
+            func = conn.recv(512).decode(FORMAT)
 
-        if func == 'save_node_blk_data':
-            save_node_blk_data()
-            print(f"Block Data saved!!")
-        elif func == 'get_node_hash_data':
-            hash_data = get_node_hash_data("path to file to be sent here")
-            conn.send(hash_data.encode(FORMAT))
+            if func == 'save_node_blk_data':
+                conn.send("OK".encode(FORMAT))
+                save_node_blk_data()
+                print(f"Block Data saved!!")
+            elif func == 'get_node_hash_data':
+                conn.send("OK".encode(FORMAT))
+                hash_data = get_node_hash_data("path to file to be sent here")
+                conn.send(hash_data.encode(FORMAT))
 
-        else:
-            conn.close()
+            else:
+                conn.close()
 
 
 def main():
