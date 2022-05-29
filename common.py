@@ -1,5 +1,3 @@
-from blockchain_main import execute_node_process
-from image import decyript_image
 import socket
 from constants import WHITELISTED_CLIENT_IPS
 import json
@@ -17,13 +15,17 @@ def get_data_by_chunks(conn):
     i = 0
     total_data = []
     while True:
-        print(f'Receiving Data Chunk {i}')
-        data = conn.recv(512).decode(FORMAT)
+        # print(f'Receiving Data Chunk {i}')
+        data = conn.recv(100).decode(FORMAT)
         i += 1
-        if data:
+        if data :
             total_data.append(data)
+        # elif data.split(" ")[1]=="END":
+        #     print("END Recieved")
+        #     break
         else:
             break
+        # print(data)
     return total_data
 
 
@@ -48,18 +50,14 @@ def get_key_by_addr(addr, lst):
 
 
 def connect(addr):
+    print(addr)
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     """ Connecting to the server. """
+    print(conn)
     conn.connect(addr)
     return conn
 
 
-def save_node_blk_data(conn):
-    data = get_data_by_chunks(conn)
-    print("All Data Received")
-    execute_node_process(data)
-    conn.close()
-    # print(f"Disconnected {addr} disconnected")
 
 
 def get_client_key_by_addr(addr):

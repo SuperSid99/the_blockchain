@@ -32,7 +32,7 @@ def main():
         # dat = conn.recv(512).decode(FORMAT)
         # print(dat)
         i = 0
-        total_data = [];
+        total_data = []
         while True:
             print(f'Receiving Data Chunk {i}')
             data = conn.recv(512).decode(FORMAT)

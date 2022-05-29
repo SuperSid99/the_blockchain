@@ -73,14 +73,10 @@
 #     main()
 #
 #
-from blk_client import execute_process
 from image import decyript_image
-import threading
 import socket
-import json
 import time
 from common import get_data_by_chunks
-import cv2 as cv
 import numpy
 
 MAIN_SERVER_IP = ""
@@ -127,23 +123,11 @@ SIZE = 10240000000
 #
 
 
-def verify_data_with_machine_blockchain(main_server_hash_dict):
-    with open('/home/vishwajeet/Travclan/BLK/the_blockchain/hashes.json') as hashes_file:
-        machine_blockchain = json.load(hashes_file)
-        return 1 if main_server_hash_dict == machine_blockchain else 0
-
-
-def verify_chain():
-    main_server_hash_dict = conn.recv(SIZE).decode(FORMAT)
-    flag = verify_data_with_machine_blockchain(main_server_hash_dict)
-    conn.send(flag.encode(FORMAT))
-
-
 def connect_to_main_server():
     main_server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     """ Connecting to the server. """
     main_server_connection.connect((MAIN_SERVER_IP, MAIN_SERVER_PORT))
-    return conn
+    return main_server_connection
 
 
 flag = False
@@ -167,12 +151,13 @@ def cli():
             get_hashes(flag)
         elif x == 3:
             print("Give the hash Value")
-            hash_value = int(input())
+            hash_value = input()
             get_data(flag, hash_value)
         elif x == 4:
             print("\nReturning")
         elif x == 5:
             print("\nThanks Exiting!!")
+            connection.close()
             break
         else:
             print("\nInvalid choice. Please Enter A valid Choice")
@@ -202,6 +187,7 @@ def get_hashes_data(authentication_flag):
         connection.send("get_hash_data")
         time.sleep(1)
         data = get_data_by_chunks(connection)
+        data="".join(data)
         print("the Available Hashes are -->>>")
         print(data)
     else:
@@ -214,6 +200,7 @@ def get_data(authentication_flag, hash_value):
         time.sleep(1)
         connection.send(hash_value.encode(FORMAT))
         data = get_data_by_chunks(connection)
+        data = ''.join(data)
         decrypted_data = decyript_image(data, MACHINE_KEY)
         return (numpy.array(decrypted_data, dtype=numpy.uint8))
 
@@ -228,4 +215,4 @@ if __name__ == "__main__":
     # t1.start()
     cli()
 
-    print("T1 thread Started for Receiving Data from Main server")
+    print("Connection Closed")
