@@ -78,9 +78,14 @@ from image import decyript_image
 import threading
 import socket
 import json
+import time
+from common import get_data_by_chunks
+import cv2 as cv
+import numpy
 
 MAIN_SERVER_IP = ""
 MAIN_SERVER_PORT = ""
+MACHINE_KEY = ""
 IP = "client IP"
 PORT = "CLIENT Port"
 ADDR = (IP, PORT)
@@ -88,38 +93,38 @@ FORMAT = "utf-8"
 SIZE = 10240000000
 
 
-# This function will open up a port of listener(with given IP) for the client to recieve the data files
-def initiate_socket_listener():
-    global conn
-    global addr
-    global server
-    while True:
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        'Bind the IP and PORT to the server'
-        server.bind(ADDR)
-        'Server is Listening, i.e, server is now waiting for the client to get connected.'
-        server.listen()
-        '''Accepting Connection from Client. '''
-
-        print(f"Server is Listening in The thread on {ADDR}")
-
-        conn, addr = server.accept()
-        server.setblocking(True)
-        print(f"[New Connection] {addr} connected.")
-        print("New Connection Started seeding file")
-        func = conn.recv(512).decode(FORMAT)
-
-        if func == 'save_blk_data':
-            save_blk_data()
-            print(f"Block Data saved!!")
-        elif func == 'get_hash_data':
-            hash_data = get_hash_data()
-            conn.send(hash_data.encode(FORMAT))
-
-        else:
-            conn.close()
-
-
+# # This function will open up a port of listener(with given IP) for the client to recieve the data files
+# def initiate_socket_listener():
+#     global conn
+#     global addr
+#     global server
+#     while True:
+#         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#         'Bind the IP and PORT to the server'
+#         server.bind(ADDR)
+#         'Server is Listening, i.e, server is now waiting for the client to get connected.'
+#         server.listen()
+#         '''Accepting Connection from Client. '''
+#
+#         print(f"Server is Listening in The thread on {ADDR}")
+#
+#         conn, addr = server.accept()
+#         server.setblocking(True)
+#         print(f"[New Connection] {addr} connected.")
+#         print("New Connection Started seeding file")
+#         func = conn.recv(512).decode(FORMAT)
+#
+#         if func == 'save_blk_data':
+#             save_blk_data()
+#             print(f"Block Data saved!!")
+#         elif func == 'get_hash_data':
+#             hash_data = get_hash_data()
+#             conn.send(hash_data.encode(FORMAT))
+#
+#         else:
+#             conn.close()
+#
+#
 
 
 def verify_data_with_machine_blockchain(main_server_hash_dict):
@@ -176,7 +181,7 @@ def cli():
 def authenticate():
     global connection
     connection = connect_to_main_server()
-    connection.send("Authenticate".encode(FORMAT))
+    connection.send("authenticate".encode(FORMAT))
     connection.send(IP.encode(FORMAT))
     authentication_flag = connection.recv(SIZE).decode(FORMAT)
     if not authentication_flag:
@@ -186,18 +191,31 @@ def authenticate():
 
 def get_hashes(authentication_flag):
     if authentication_flag:
-        hashes = get_hash_data()
+        get_hashes_data()
         print("These Are the Hashes")
-        print(hashes)
+    else:
+        print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
+
+
+def get_hashes_data(authentication_flag):
+    if authentication_flag:
+        connection.send("get_hash_data")
+        time.sleep(1)
+        data = get_data_by_chunks(connection)
+        print("the Available Hashes are -->>>")
+        print(data)
     else:
         print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
 
 
 def get_data(authentication_flag, hash_value):
     if authentication_flag:
-        connection.send("get_hash_value".encode(FORMAT))
-        key = connection.recv(SIZE).decode(FORMAT)
-        decyript_image(hash_value, key)
+        connection.send("get_en_data".encode(FORMAT))
+        time.sleep(1)
+        connection.send(hash_value.encode(FORMAT))
+        data = get_data_by_chunks(connection)
+        decrypted_data = decyript_image(data, MACHINE_KEY)
+        return (numpy.array(decrypted_data, dtype=numpy.uint8))
 
     else:
         print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")

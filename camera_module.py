@@ -19,7 +19,7 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
         # print("Watchdog received created event - % s." % event.src_path)
         sttime=time.time()
         print(f"image added to folder at {sttime}\n")
-        en_image = execute_camera_module_process(event.src_path, CAMERA_MODULES_IP)
+        en_image = execute_camera_module_process(event.src_path, CAMERA_MODULE_IP)
         send_image_to_main_server(en_image)
         endtime=time.time()
         print(f"execution ended at {endtime}\n")
@@ -37,6 +37,8 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
 def send_image_to_main_server(en_image):
     connection = connect((MAIN_SERVER_IP, MAIN_SERVER_PORT))
     i = 0
+    connection.send("camera".encode(FORMAT))
+    time.sleep(2)
     print("Sending data in Chunks")
     for chunk in chunks(en_image, 100):
         print(f"Sending chunk {i}")

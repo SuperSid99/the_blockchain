@@ -54,6 +54,12 @@ def execute_process(en_image):
 
     print(new_hash)
 
+    return {
+        "previous_hash": hash_value,
+        "new_hash": new_hash,
+        "en_image": en_image
+    }
+
 
 def execute_node_process(en_image):
     hash = open('hashes.json', 'r+')

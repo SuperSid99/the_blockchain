@@ -1,6 +1,7 @@
 from blockchain_main import execute_node_process
 from image import decyript_image
-
+import socket
+from constants import WHITELISTED_CLIENT_IPS
 import json
 
 MAIN_SERVER_IP = ""
@@ -59,4 +60,11 @@ def save_node_blk_data(conn):
     execute_node_process(data)
     conn.close()
     # print(f"Disconnected {addr} disconnected")
+
+
+def get_client_key_by_addr(addr):
+    for _ in WHITELISTED_CLIENT_IPS:
+        if _[0] == addr:
+            return _[2]
+    return ValueError("No key Found")
 

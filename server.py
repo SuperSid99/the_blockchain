@@ -56,8 +56,9 @@ import errno
 from blockchain_main import execute_process
 import time
 from image import decyript_image, give_encyripted_image
-from common import chunks, get_data_by_chunks, get_key_by_addr, connect
+from common import chunks, get_data_by_chunks, get_key_by_addr, connect, get_node_hash_data, get_client_key_by_addr
 from constants import NODES, CAMERA_MODULES_IPS, WHITELISTED_CLIENT_IPS
+from write_to_json import get_image_data
 
 # "IP Address of the main server"
 IP = "100.81.249.49"
@@ -65,6 +66,7 @@ PORT = 5589
 ADDR = (IP, PORT)
 SIZE = 10240000000
 FORMAT = "utf-8"
+MAIN_SERVER_KEY = ""
 
 
 def get_decrypted_data_of_camera_module(addr, data):
@@ -98,16 +100,28 @@ def main():
             decrypted_data_from_camera_module = get_decrypted_data_of_camera_module(addr, data)
             if verify_chain():
                 final_encrypted_data = give_encyripted_image(decrypted_data_from_camera_module)
-                execute_process(final_encrypted_data)
-                send_blk_data_to_machines(final_encrypted_data)
+                processed_block = execute_process(final_encrypted_data)
+                send_blk_data_to_machines(processed_block)
             else:
                 print("Block Chain is Corrupted")
-            conn.close()
             print(f"Disconnected {addr} disconnected")
         elif func == "authenticate":
             flag = authenticate(addr)
             conn.send(flag.encode(FORMAT))
-            conn.close()
+        elif func == "get_hash_data":
+            hashes_data = get_node_hash_data("file/path/to/be/added")
+            print("Sending data in Chunks")
+            i = 0
+            for chunk in chunks(hashes_data, 100):
+                print(f"Sending chunk {i}")
+                conn.send(chunk.encode(FORMAT))
+                i += 1
+            print("All Data Sent")
+        elif func == "get_en_data":
+            hash_value = conn.recv(SIZE).decode(FORMAT)
+            send_en_data_by_hash_value(hash_value, conn, addr)
+            print("Data Sent")
+
         else:
             print("Invalid connection")
             conn.close()
@@ -135,6 +149,20 @@ def send_blk_data_to_machines(data):
         print("All Data sent")
 
         connection.close()
+
+
+def send_en_data_by_hash_value(hash_value, conn, addr):
+    en_data = get_image_data(hash_value)
+    decrypted_data_of_main_server = decyript_image(en_data, MAIN_SERVER_KEY)
+    client_key = get_client_key_by_addr(addr)
+    encrypted_image_for_given_machine = give_encyripted_image(decrypted_data_of_main_server, client_key)
+    print("Sending data in Chunks")
+    i = 0
+    for chunk in chunks(encrypted_image_for_given_machine, 100):
+        print(f"Sending chunk {i}")
+        conn.send(chunk.encode(FORMAT))
+        i += 1
+    print("All Data Sent")
 
 
 def verify_chain():
