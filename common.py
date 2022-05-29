@@ -18,7 +18,7 @@ def get_data_by_chunks(conn):
     total_data = []
     while True:
         print(f'Receiving Data Chunk {i}')
-        data = conn.recv(512).decode(FORMAT)
+        data = conn.recv(100).decode(FORMAT)
         i += 1
         if data:
             total_data.append(data)
@@ -57,6 +57,7 @@ def connect(addr):
 def save_node_blk_data(conn):
     data = get_data_by_chunks(conn)
     print("All Data Received")
+    data = ''.join(data)
     execute_node_process(data)
     conn.close()
     # print(f"Disconnected {addr} disconnected")
