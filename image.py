@@ -37,6 +37,37 @@ def give_encyripted_image(name_of_image, key):
     return encyripted_image
 
 
+def give_encyripted_image_for_main_server(image_data, key):
+    Key_dic = genarate_key(key)
+    img = image_data
+    encyripted_image = ""
+
+
+    for _ in str(len(img)):
+    
+        encyripted_image+=Key_dic[_]
+    encyripted_image+="-"
+
+    for _ in str(len(img[0])):
+        encyripted_image+=Key_dic[_]
+    encyripted_image+="-"
+
+    encyripted_image+=Key_dic[str(3)]
+    encyripted_image+="-"
+
+
+
+    for _ in img:
+        for i in _:
+            for j in i:
+                try:
+                    for _ in str(j):
+                        encyripted_image += Key_dic[_]
+                    encyripted_image+="-"
+                except:
+                    encyripted_image += f"{Key_dic[str(j)]}-"
+    return encyripted_image
+
 def decyript_image(im_data, key):
 
     # im_data = get_image_data(hashcode)

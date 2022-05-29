@@ -56,7 +56,7 @@ from blockchain_main import execute_process, execute_node_process
 import time
 import cv2 as cv
 import numpy
-from image import decyript_image, give_encyripted_image
+from image import decyript_image, give_encyripted_image, get_key, give_encyripted_image_for_main_server
 from common import chunks, get_data_by_chunks, get_key_by_addr, connect, get_node_hash_data, get_client_key_by_addr
 from constants import NODES, CAMERA_MODULES_IPS, WHITELISTED_CLIENT_IPS
 from write_to_json import get_image_data
@@ -118,14 +118,20 @@ def main():
                 print(len(total_data))
                 '''Now Decrypt image from Camera Module'''
                 decrypted_data_from_camera_module = get_decrypted_data_of_camera_module(addr[0], data)
+
+                print(len(decrypted_data_from_camera_module))
+                print(len(decrypted_data_from_camera_module[0]))
+                
                 # imggg= (numpy.array(decrypted_data_from_camera_module, dtype=numpy.uint8))
                 # print(imggg.shape)
                 # cv.imshow("im_numpy", imggg)
                 # cv.waitKey(0)
 
                 if verify_chain():
-                    final_encrypted_data = give_encyripted_image(decrypted_data_from_camera_module)
+                    key = get_key()
+                    final_encrypted_data = give_encyripted_image_for_main_server(decrypted_data_from_camera_module, key)
                     processed_block = execute_process(final_encrypted_data)
+                    print(processed_block)
                     print("process finished") # send_blk_data_to_machines(processed_block)
                 else:
                     print("Block Chain is Corrupted")
@@ -203,10 +209,31 @@ def verify_chain():
         connection.send("get_node_hash_data".encode(FORMAT))
         var = connection.recv(512).decode(FORMAT)
         if var == "OK":
-            node_hash_dict = connection.recv(SIZE).decode(FORMAT)
-            with open('Main machine blockchain path') as hashes_file:
-                main_server_hash_dict = json.load(hashes_file)
+            node_hash_dict = get_data_by_chunks(connection)
+            node_hash_dict = "".join(node_hash_dict)
+            node_hash_dict = (json.loads(node_hash_dict))
+            # print(type(node_hash_dict),node_hash_dict)
+            # node_hash_dict = json.loads(node_hash_dict)
+            with open('/Users/siddharthsharma/Desktop/the_blockchain/hashes.json') as hashes_file:
+                main_server_hash_dict = (json.load(hashes_file))
+            # print(type(main_server_hash_dict),json.dumps(main_server_hash_dict))
+
+            print((main_server_hash_dict) == node_hash_dict)
+            
+            # if len(main_server_hash_dict) == len(node_hash_dict):
+            #     current_flag=True
+            #     for _ in range(len(main_server_hash_dict)):
+            #         if main_server_hash_dict[_] == node_hash_dict[_]:
+            #             pass
+            #         else:
+            #             print(_,main_server_hash_dict[_],node_hash_dict[_])
+            #             current_flag=False
+                
+            # else:
+            #     print(main_server_hash_dict,node_hash_dict)
+            #     current_flag=False
             current_flag = main_server_hash_dict == node_hash_dict
+            print(current_flag)
             if not current_flag:
                 print(f"Block Chain Not Verified At Node {_[0]}, {_[1]}. Please check the Machine.")
             flag = flag & current_flag

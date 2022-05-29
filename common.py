@@ -15,7 +15,7 @@ def get_data_by_chunks(conn):
     i = 0
     total_data = []
     while True:
-        # print(f'Receiving Data Chunk {i}')
+        print(f'Receiving Data Chunk {i}')
         data = conn.recv(100).decode(FORMAT)
         i += 1
         if data :
@@ -25,7 +25,7 @@ def get_data_by_chunks(conn):
         #     break
         else:
             break
-        # print(data)
+        print(data)
     return total_data
 
 
