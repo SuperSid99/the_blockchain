@@ -78,6 +78,7 @@ import socket
 import time
 from common import get_data_by_chunks
 import numpy
+import json
 
 MAIN_SERVER_IP = ""
 MAIN_SERVER_PORT = ""
@@ -167,8 +168,10 @@ def authenticate():
     global connection
     connection = connect_to_main_server()
     connection.send("authenticate".encode(FORMAT))
-    connection.send(IP.encode(FORMAT))
-    authentication_flag = connection.recv(SIZE).decode(FORMAT)
+    var = connection.recv(512).decode(FORMAT)
+    if var == "OK":
+        # connection.send(IP.encode(FORMAT))
+        authentication_flag = connection.recv(SIZE).decode(FORMAT)
     if not authentication_flag:
         print("Invalid Client")
     return authentication_flag
@@ -186,8 +189,11 @@ def get_hashes_data(authentication_flag):
     if authentication_flag:
         connection.send("get_hash_data")
         time.sleep(1)
-        data = get_data_by_chunks(connection)
-        data="".join(data)
+        var = connection.recv(512).decode(FORMAT)
+        if var == "OK":
+            data = get_data_by_chunks(connection)
+            data = "".join(data)
+            data = json.loads(data)
         print("the Available Hashes are -->>>")
         print(data)
     else:
@@ -198,11 +204,13 @@ def get_data(authentication_flag, hash_value):
     if authentication_flag:
         connection.send("get_en_data".encode(FORMAT))
         time.sleep(1)
-        connection.send(hash_value.encode(FORMAT))
-        data = get_data_by_chunks(connection)
-        data = ''.join(data)
-        decrypted_data = decyript_image(data, MACHINE_KEY)
-        return (numpy.array(decrypted_data, dtype=numpy.uint8))
+        var = connection.recv(512).decode(FORMAT)
+        if var == "OK":
+            connection.send(hash_value.encode(FORMAT))
+            data = get_data_by_chunks(connection)
+            data = ''.join(data)
+            decrypted_data = decyript_image(data, MACHINE_KEY)
+        return numpy.array(decrypted_data, dtype=numpy.uint8)
 
     else:
         print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")

@@ -137,9 +137,15 @@ def main():
                     print("Block Chain is Corrupted")
                 print(f"Disconnected {addr} disconnected")
             elif func == "authenticate":
-                flag = authenticate(addr)
+                conn.send("OK".encode(FORMAT))
+                print("SENT OK")
+                time.sleep(2)
+                flag = authenticate(addr[0])
                 conn.send(flag.encode(FORMAT))
             elif func == "get_hash_data":
+                conn.send("OK".encode(FORMAT))
+                print("SENT OK")
+                time.sleep(2)
                 hashes_data = get_node_hash_data("file/path/to/be/added")
                 print("Sending data in Chunks")
                 i = 0
@@ -149,6 +155,9 @@ def main():
                     i += 1
                 print("All Data Sent")
             elif func == "get_en_data":
+                conn.send("OK".encode(FORMAT))
+                print("SENT OK")
+                time.sleep(2)
                 hash_value = conn.recv(SIZE).decode(FORMAT)
                 send_en_data_by_hash_value(hash_value, conn, addr)
                 print("Data Sent")
@@ -174,13 +183,15 @@ def send_blk_data_to_machines(data):
         connection.send("save_node_blk_data".encode(FORMAT))
         time.sleep(2)
         i = 0
-        print("Sending data in Chunks")
-        for chunk in chunks(data, 100):
-            print(f"Sending chunk {i}")
-            connection.send(chunk.encode(FORMAT))
-            i += 1
+        var = connection.recv(512).decode(FORMAT)
+        if var == "OK":
+            print("Sending data in Chunks")
+            for chunk in chunks(data, 100):
+                print(f"Sending chunk {i}")
+                connection.send(chunk.encode(FORMAT))
+                i += 1
 
-        print("All Data sent")
+            print("All Data sent")
 
         connection.close()
 
@@ -218,7 +229,7 @@ def verify_chain():
                 main_server_hash_dict = (json.load(hashes_file))
             # print(type(main_server_hash_dict),json.dumps(main_server_hash_dict))
 
-            print((main_server_hash_dict) == node_hash_dict)
+            print(main_server_hash_dict == node_hash_dict)
             
             # if len(main_server_hash_dict) == len(node_hash_dict):
             #     current_flag=True
@@ -245,7 +256,7 @@ def verify_chain():
     if flag:
         print("********Block Chain Verified****************")
 
-    return(flag)
+    return flag
 
 
 if __name__ == "__main__":

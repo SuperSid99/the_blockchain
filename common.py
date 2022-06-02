@@ -2,6 +2,8 @@ import socket
 from constants import WHITELISTED_CLIENT_IPS
 import json
 
+from the_blockchain.blockchain_main import execute_node_process
+
 MAIN_SERVER_IP = ""
 MAIN_SERVER_PORT = ""
 IP = "client IP"

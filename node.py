@@ -31,6 +31,7 @@ def initiate_socket_listener():
 
             if func == 'save_node_blk_data':
                 conn.send("OK".encode(FORMAT))
+                time.sleep(3)
                 save_node_blk_data()
                 print(f"Block Data saved!!")
             elif func == 'get_node_hash_data':
