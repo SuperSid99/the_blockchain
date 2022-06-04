@@ -78,13 +78,14 @@ import socket
 import time
 from common import get_data_by_chunks
 import numpy
+import cv2 as cv
 import json
 
-MAIN_SERVER_IP = ""
-MAIN_SERVER_PORT = ""
-MACHINE_KEY = ""
-IP = "client IP"
-PORT = "CLIENT Port"
+MAIN_SERVER_IP = "100.97.221.115"
+MAIN_SERVER_PORT = 5589
+MACHINE_KEY = 123456
+IP = "100.81.249.49"
+PORT = 4569
 ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 10240000000
@@ -158,36 +159,39 @@ def cli():
             print("\nReturning")
         elif x == 5:
             print("\nThanks Exiting!!")
-            connection.close()
+            # connection.close()
             break
         else:
             print("\nInvalid choice. Please Enter A valid Choice")
 
 
 def authenticate():
-    global connection
     connection = connect_to_main_server()
     connection.send("authenticate".encode(FORMAT))
     var = connection.recv(512).decode(FORMAT)
     if var == "OK":
         # connection.send(IP.encode(FORMAT))
+        print("please wait while we are authenticating")
         authentication_flag = connection.recv(SIZE).decode(FORMAT)
+        print(authentication_flag)
     if not authentication_flag:
         print("Invalid Client")
+    connection.close()
     return authentication_flag
 
 
 def get_hashes(authentication_flag):
     if authentication_flag:
-        get_hashes_data()
+        get_hashes_data(authentication_flag)
         print("These Are the Hashes")
     else:
         print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
 
 
 def get_hashes_data(authentication_flag):
+    connection = connect_to_main_server()
     if authentication_flag:
-        connection.send("get_hash_data")
+        connection.send("get_hash_data".encode(FORMAT))
         time.sleep(1)
         var = connection.recv(512).decode(FORMAT)
         if var == "OK":
@@ -198,9 +202,11 @@ def get_hashes_data(authentication_flag):
         print(data)
     else:
         print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
+    connection.close()
 
 
 def get_data(authentication_flag, hash_value):
+    connection = connect_to_main_server()
     if authentication_flag:
         connection.send("get_en_data".encode(FORMAT))
         time.sleep(1)
@@ -210,10 +216,15 @@ def get_data(authentication_flag, hash_value):
             data = get_data_by_chunks(connection)
             data = ''.join(data)
             decrypted_data = decyript_image(data, MACHINE_KEY)
-        return numpy.array(decrypted_data, dtype=numpy.uint8)
+            imggg= (numpy.array(decrypted_data, dtype=numpy.uint8))
+            # print(imggg.shape)
+            cv.imshow("im_numpy", imggg)
+            cv.waitKey(0)
+        return 1
 
     else:
         print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
+    connection.close()
 
 
 if __name__ == "__main__":

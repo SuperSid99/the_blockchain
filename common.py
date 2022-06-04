@@ -20,7 +20,7 @@ def get_data_by_chunks(conn):
         print(f'Receiving Data Chunk {i}')
         data = conn.recv(100).decode(FORMAT)
         i += 1
-        if data :
+        if data:
             total_data.append(data)
         # elif data.split(" ")[1]=="END":
         #     print("END Recieved")
@@ -58,7 +58,6 @@ def connect(addr):
     print(conn)
     conn.connect(addr)
     return conn
-
 
 
 def save_node_blk_data(conn):

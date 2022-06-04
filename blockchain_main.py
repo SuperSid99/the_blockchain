@@ -66,17 +66,21 @@ def execute_node_process(data):
     y = json.loads(x)
     z = y["hash_data"]
 
-    hash_value = list(z[-1].values())[-1]
+    # hash_value = list(z[-1].values())[-1]
 
-    new_block = create_new_block(hash_value, en_image)
-    new_hash = new_block.block_hash
+    previous_hash = data['previous_hash']
+    new_hash = data['new_hash']
+    en_image = data['en_image']
+
+    # new_block = create_new_block(hash_value, data)
+    # new_hash = new_block.block_hash
 
     hash_data = {
         f"hashcode{len(z)}": new_hash
     }
     block_data = {
         f"block{len(z)}_hash": new_hash,
-        f"block{len(z) - 1}_hash": hash_value
+        f"block{len(z) - 1}_hash": previous_hash
     }
     image_data = {
         f"hashcode{len(z)}": new_hash,
