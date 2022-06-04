@@ -96,6 +96,7 @@ def main():
     try:
         while True:
             '''Accepting Connection from Client. '''
+            print("while started")
             conn, addr = server.accept()
             print(f"[New Connection] {addr} connected.")
             print("New Connection Started seeding file")
@@ -132,7 +133,8 @@ def main():
                     final_encrypted_data = give_encyripted_image_for_main_server(decrypted_data_from_camera_module, key)
                     processed_block = execute_process(final_encrypted_data)
                     print(processed_block)
-                    print("process finished") # send_blk_data_to_machines(processed_block)
+                    send_blk_data_to_machines(processed_block)
+                    print("process finished") 
                 else:
                     print("Block Chain is Corrupted")
                 print(f"Disconnected {addr} disconnected")
@@ -140,27 +142,31 @@ def main():
                 conn.send("OK".encode(FORMAT))
                 print("SENT OK")
                 time.sleep(2)
-                flag = authenticate(addr[0])
+                flag = str(authenticate(addr[0]))
                 conn.send(flag.encode(FORMAT))
+                print("authentication complete")
+                conn.close()
             elif func == "get_hash_data":
                 conn.send("OK".encode(FORMAT))
                 print("SENT OK")
                 time.sleep(2)
-                hashes_data = get_node_hash_data("file/path/to/be/added")
+                hashes_data = get_node_hash_data("/Users/siddharthsharma/Desktop/the_blockchain/hashes.json")
                 print("Sending data in Chunks")
                 i = 0
-                for chunk in chunks(hashes_data, 100):
+                for chunk in chunks(json.dumps(hashes_data), 100):
                     print(f"Sending chunk {i}")
                     conn.send(chunk.encode(FORMAT))
                     i += 1
                 print("All Data Sent")
+                conn.close()
             elif func == "get_en_data":
                 conn.send("OK".encode(FORMAT))
                 print("SENT OK")
                 time.sleep(2)
-                hash_value = conn.recv(SIZE).decode(FORMAT)
+                hash_value = conn.recv(512).decode(FORMAT)
                 send_en_data_by_hash_value(hash_value, conn, addr)
                 print("Data Sent")
+                conn.close()
 
             else:
                 print("Invalid connection")
@@ -186,7 +192,7 @@ def send_blk_data_to_machines(data):
         var = connection.recv(512).decode(FORMAT)
         if var == "OK":
             print("Sending data in Chunks")
-            for chunk in chunks(data, 100):
+            for chunk in chunks(json.dumps(data), 100):
                 print(f"Sending chunk {i}")
                 connection.send(chunk.encode(FORMAT))
                 i += 1
@@ -199,8 +205,8 @@ def send_blk_data_to_machines(data):
 def send_en_data_by_hash_value(hash_value, conn, addr):
     en_data = get_image_data(hash_value)
     decrypted_data_of_main_server = decyript_image(en_data, MAIN_SERVER_KEY)
-    client_key = get_client_key_by_addr(addr)
-    encrypted_image_for_given_machine = give_encyripted_image(decrypted_data_of_main_server, client_key)
+    client_key = get_client_key_by_addr(addr[0])
+    encrypted_image_for_given_machine = give_encyripted_image_for_main_server(decrypted_data_of_main_server, client_key)
     print("Sending data in Chunks")
     i = 0
     for chunk in chunks(encrypted_image_for_given_machine, 100):

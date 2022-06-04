@@ -116,6 +116,7 @@ def genarate_key(key):
     count = 0
     c1 = 0
     arr = []
+    print(key)
     for _ in str(key):
         if int(_) not in arr:
             dic[str(count)] = _

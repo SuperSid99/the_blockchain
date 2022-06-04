@@ -2,7 +2,7 @@ import socket
 from constants import WHITELISTED_CLIENT_IPS
 import json
 
-from the_blockchain.blockchain_main import execute_node_process
+from blockchain_main import execute_node_process
 
 MAIN_SERVER_IP = ""
 MAIN_SERVER_PORT = ""
@@ -73,6 +73,7 @@ def save_node_blk_data(conn):
 def get_client_key_by_addr(addr):
     for _ in WHITELISTED_CLIENT_IPS:
         if _[0] == addr:
+            print(_[2])
             return _[2]
     return ValueError("No key Found")
 
