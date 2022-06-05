@@ -217,9 +217,10 @@ def get_data(authentication_flag, hash_value):
             data = ''.join(data)
             decrypted_data = decyript_image(data, MACHINE_KEY)
             imggg= (numpy.array(decrypted_data, dtype=numpy.uint8))
-            # print(imggg.shape)
             cv.imshow("im_numpy", imggg)
             cv.waitKey(0)
+            cv.destroyAllWindows()
+            cv.waitKey(1)
         return 1
 
     else:
