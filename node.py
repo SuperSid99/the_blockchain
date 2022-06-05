@@ -1,11 +1,15 @@
 import socket
 import time
+import logging
 from common import save_node_blk_data, get_node_hash_data, chunks
 import json
 NODE_IP = "100.81.249.49"
 NODE_PORT = 5000
 SIZE = 10240000000
 FORMAT = "utf-8"
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('')
 
 # This function will open up a port of listener(with given IP) for the client to recieve the data files
 
@@ -22,35 +26,33 @@ def initiate_socket_listener():
         server.listen()
         '''Accepting Connection from Client. '''
 
-        print(f"Server is Listening on {NODE_IP, NODE_PORT}")
+        log.info(f"Server is Listening on {NODE_IP, NODE_PORT}")
         while True:
             conn, addr = server.accept()
-            print(f"[New Connection] {addr} connected.")
-            print("New Connection Started seeding file")
+            log.info(f"[New Connection] {addr} connected.")
+            log.info("New Connection Started seeding.")
             func = conn.recv(512).decode(FORMAT)
 
             if func == 'save_node_blk_data':
+                log.info("Request Received for Saving a New Block")
                 conn.send("OK".encode(FORMAT))
                 time.sleep(3)
                 save_node_blk_data(conn)
-                print(f"Block Data saved!!")
+                log.info(f"Block Data saved!!")
             elif func == 'get_node_hash_data':
+                log.info("Request Received for ")
                 conn.send("OK".encode(FORMAT))
-                print("SENT OK")
+                log.info("SENT OK")
                 time.sleep(5)
                 hash_data = get_node_hash_data("/home/vishwajeet/Travclan/BLK/the_blockchain/hashes.json")
                 i = 0
-                print(hash_data)
-                print(type(hash_data))
+                log.info("Sending Data in Chunks")
                 for chunk in chunks(json.dumps(hash_data), 100):
-                    print(chunk)
-                    print(f"Sending chunk {i}")
-                    print(len(chunk))
                     conn.send(chunk.encode(FORMAT))
                     i += 1
                 # connection.send("  END".encode(FORMAT))
                 conn.close()
-                print("All Data sent")
+                log.info("All Data sent")
 
             elif KeyboardInterrupt:
                 server.close()

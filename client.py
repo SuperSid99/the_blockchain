@@ -80,6 +80,10 @@ from common import get_data_by_chunks
 import numpy
 import cv2 as cv
 import json
+import logging
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('')
 
 MAIN_SERVER_IP = "100.97.221.115"
 MAIN_SERVER_PORT = 5589
@@ -126,10 +130,14 @@ SIZE = 10240000000
 
 
 def connect_to_main_server():
-    main_server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    """ Connecting to the server. """
-    main_server_connection.connect((MAIN_SERVER_IP, MAIN_SERVER_PORT))
-    return main_server_connection
+    try:
+        main_server_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        """ Connecting to the server. """
+        main_server_connection.connect((MAIN_SERVER_IP, MAIN_SERVER_PORT))
+        return main_server_connection
+    except Exception as e:
+        log.error(f"An Error Occurred While Connecting To Main Server. Error ==> {e}")
+        raise e
 
 
 flag = False
@@ -171,21 +179,25 @@ def authenticate():
     var = connection.recv(512).decode(FORMAT)
     if var == "OK":
         # connection.send(IP.encode(FORMAT))
-        print("please wait while we are authenticating")
+        log.info("Please wait while we are authenticating You.")
         authentication_flag = connection.recv(SIZE).decode(FORMAT)
         print(authentication_flag)
-    if not authentication_flag:
-        print("Invalid Client")
-    connection.close()
+        if not authentication_flag:
+            log.info("Invalid Client. Please Try Again")
+        else:
+            log.info("You Are Authenticated.")
+        connection.close()
+    else:
+        log.error("Connection Not Acknowledged.")
     return authentication_flag
 
 
 def get_hashes(authentication_flag):
     if authentication_flag:
+        log.info("Please Wait While We are Fetching Info of Hashes From Main Server")
         get_hashes_data(authentication_flag)
-        print("These Are the Hashes")
     else:
-        print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
+        log.error("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
 
 
 def get_hashes_data(authentication_flag):
@@ -198,10 +210,12 @@ def get_hashes_data(authentication_flag):
             data = get_data_by_chunks(connection)
             data = "".join(data)
             data = json.loads(data)
-        print("the Available Hashes are -->>>")
-        print(data)
+            log.info("The Available Hashes are-->>>")
+            print(data)
+        else:
+            log.error("Connection Not Acknowledged.")
     else:
-        print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
+        log.error("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
     connection.close()
 
 
@@ -216,23 +230,25 @@ def get_data(authentication_flag, hash_value):
             data = get_data_by_chunks(connection)
             data = ''.join(data)
             decrypted_data = decyript_image(data, MACHINE_KEY)
-            imggg= (numpy.array(decrypted_data, dtype=numpy.uint8))
-            cv.imshow("im_numpy", imggg)
+            img = (numpy.array(decrypted_data, dtype=numpy.uint8))
+            cv.imshow("im_numpy", img)
             cv.waitKey(0)
             cv.destroyAllWindows()
             cv.waitKey(1)
+        else:
+            log.error("Connection Not Acknowledged.")
         return 1
 
     else:
-        print("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
+        log.error("\nYou Are Not Authenticated. Please Authenticate Yourself First.")
     connection.close()
 
 
 if __name__ == "__main__":
-    print("reaching")
+    # print("reaching")
     # t1 = threading.Thread(target=initiate_socket_listener)
     # t1.daemon = True
     # t1.start()
     cli()
 
-    print("Connection Closed")
+    log.info("Connection Closed")

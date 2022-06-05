@@ -1,11 +1,13 @@
 from blocks import create_new_block
-from blocks import Block
 from image import give_encyripted_image
 from image import get_key
 from write_to_json import write_json
-
 import json
+import logging
 import time
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('')
 
 
 def execute_process(en_image):
@@ -19,21 +21,12 @@ def execute_process(en_image):
 
     hash_value = list(z[-1].values())[-1]
 
-    '''commenting the code as we are now operating this in main server'''
-    '''To be uncommented for main server and commented for remaining ones'''
-
-    # sttime=time.time()
-    # print(f"encryption started at {sttime}\n")
-    #
-    # en_image = give_encyripted_image(image_path,key)
-    #
-    # endtime=time.time()
-    # print(f"encryption ended at {endtime}\n")
-    # print(f"total time taken to encrypt = {endtime-sttime}\n")
-
+    '''Here  a New Block is created with data as previous_hash + en_image '''
+    log.info("Creating New Block")
     new_block = create_new_block(hash_value, en_image)
     new_hash = new_block.block_hash
 
+    log.info("Successfully Created New Block")
     hash_data = {
         f"hashcode{len(z)}": new_hash
     }
@@ -46,6 +39,7 @@ def execute_process(en_image):
         f"image{len(z)}": en_image
     }
 
+    log.info("Saving Block Data")
     write_json(hash_data, 'hashes.json', "hash_data")
     write_json(block_data, 'block_data.json', "blockchain_data")
     write_json(image_data, 'images.json', "image_data")
@@ -66,14 +60,11 @@ def execute_node_process(data):
     y = json.loads(x)
     z = y["hash_data"]
 
-    # hash_value = list(z[-1].values())[-1]
-
     previous_hash = data['previous_hash']
     new_hash = data['new_hash']
     en_image = data['en_image']
 
-    # new_block = create_new_block(hash_value, data)
-    # new_hash = new_block.block_hash
+    log.info("Saving Block Data in Node")
 
     hash_data = {
         f"hashcode{len(z)}": new_hash
@@ -91,8 +82,8 @@ def execute_node_process(data):
     write_json(block_data, 'block_data.json', "blockchain_data")
     write_json(image_data, 'images.json', "image_data")
 
-    print("New Block Added To Node")
-    print(new_hash)
+    log.info("New Block Added To Node")
+    log.info(new_hash)
 
 
 def execute_camera_module_process(im_path, key):

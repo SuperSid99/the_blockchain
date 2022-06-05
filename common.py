@@ -1,7 +1,7 @@
 import socket
 from constants import WHITELISTED_CLIENT_IPS
 import json
-
+import logging
 from blockchain_main import execute_node_process
 
 MAIN_SERVER_IP = ""
@@ -12,22 +12,23 @@ ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 10240000000
 
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('')
+
 
 def get_data_by_chunks(conn):
     i = 0
     total_data = []
+    log.info("Getting Data By Chunks")
     while True:
-        print(f'Receiving Data Chunk {i}')
+        log.info(f'Receiving Data Chunk {i}')
         data = conn.recv(100).decode(FORMAT)
         i += 1
         if data:
             total_data.append(data)
-        # elif data.split(" ")[1]=="END":
-        #     print("END Recieved")
-        #     break
         else:
             break
-        print(data)
+    log.info("All data Received.")
     return total_data
 
 
@@ -52,17 +53,22 @@ def get_key_by_addr(addr, lst):
 
 
 def connect(addr):
-    print(addr)
-    conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    """ Connecting to the server. """
-    print(conn)
-    conn.connect(addr)
-    return conn
+    log.info(f"Connecting To Address ==> {addr}")
+    try:
+        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        """ Connecting to the server. """
+        conn.connect(addr)
+        log.info(f"connected. >>{conn}")
+        return conn
+    except Exception as e:
+        log.error(f"An Error Occurred While Connecting. Error >> {e}")
+        return e
 
 
 def save_node_blk_data(conn):
+    log.info("Getting Data By chunks")
     data = get_data_by_chunks(conn)
-    print("All Data Received")
+    log.info("All Data Received")
     data = ''.join(data)
     execute_node_process(data)
     conn.close()
