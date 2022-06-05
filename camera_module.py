@@ -23,7 +23,7 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
         try:
             st_time = time.time()
             log.info("Execution Started.")
-            log.info(f"[STEP 1] Image added to folder at {sttime}\n")
+            log.info(f"[STEP 1] Image added to folder at {st_time}\n")
             key = get_key_by_addr(CAMERA_MODULE_IP, CAMERA_MODULES_IPS)
             log.info("[STEP 2] Encrypting the Received Image")
             en_image = execute_camera_module_process(event.src_path, key)
